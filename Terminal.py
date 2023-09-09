@@ -16,6 +16,9 @@ class PlasticCard:
         self.name = name
         print('Карта активирована')
 
+    def get_score(self):
+        return self.__score
+
     @controler.logger('history.json')
     @controler.valid_amount(AMOUNT_MULTIPLE)
     def fill(self, amount):
@@ -25,9 +28,11 @@ class PlasticCard:
         if amount % self.AMOUNT_MULTIPLE == 0:
             self.__score += amount
             current_dict.update(successful=True)
+            print(f'Сейчас на счету: {self.get_score()}')
             return current_dict
         else:
             current_dict.update(successful=False)
+            print(f'Сейчас на счету: {self.get_score()}')
             return current_dict
 
     @controler.logger('history.json')
@@ -36,21 +41,22 @@ class PlasticCard:
         """Снять деньги"""
         current_dict = {'name': self.name, 'balance': self.__score, 'operation': 'take', 'amount': amount,
                         'datatime': str(datetime.now())}
-        if amount % self.AMOUNT_MULTIPLE == 0:
+        if amount % self.AMOUNT_MULTIPLE == 0 and self.__score >= amount:
             self.__score -= amount
             current_dict.update(successful=True)
+            print(f'Сейчас на счету: {self.get_score()}')
             return current_dict
         else:
             current_dict.update(successful=False)
+            print(f'Сейчас на счету: {self.get_score()}')
             return current_dict
 
-    def get_score(self):
-        return self.__score
+    @staticmethod
+    def get_history(name):
+        return controler.get_history(name)
 
 
-fle = Path('history.json')
-fle.touch(exist_ok=True)
-f = open(fle)
-a = PlasticCard('Ivan')
-a.fill(200)
-a.take(100)
+# a = PlasticCard('kerwefge')
+# a.fill(100)
+# a.take(100)
+# print(a.get_history('kerwefge'))
